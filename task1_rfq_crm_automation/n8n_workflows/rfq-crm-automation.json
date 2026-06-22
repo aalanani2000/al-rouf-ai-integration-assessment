@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        64,
+        128
       ],
-      "id": "3e3a593a-1ad6-48ec-ad9b-6bf201c5c28e",
+      "id": "f7279fbd-deeb-4e7f-8a7d-a08bbc33f3df",
       "name": "Webhook",
       "webhookId": "733d531f-bc8b-4936-b8e3-1d547e0016d9"
     },
@@ -46,11 +46,11 @@
         208,
         0
       ],
-      "id": "e7f0c95c-8596-4838-bb7f-a7e14db2eed6",
+      "id": "36b481bc-9ee8-4d0e-8d29-2cf37e366cbb",
       "name": "Message a model",
       "credentials": {
         "openAiApi": {
-          "id": "eQPIIV9Gn9QuqBGI",
+          "id": "DFlLKny2DbnWxWzL",
           "name": "OpenAi account"
         }
       }
@@ -126,10 +126,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
-        0
+        496,
+        128
       ],
-      "id": "29cee08f-6094-4e0e-9118-9cb8e9ca3b55",
+      "id": "7b8fa944-990c-4647-a9aa-eca5d8de98b2",
       "name": "Edit Fields"
     },
     {
@@ -161,26 +161,56 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        768,
-        0
+        624,
+        -16
       ],
-      "id": "a0584dfb-a5db-48ca-a1b9-94377a6694dc",
+      "id": "949aaad1-f0ce-46cc-a735-6393d53b81e6",
       "name": "Edit Fields1"
     },
     {
       "parameters": {
-        "operation": "write",
-        "fileName": "./data/mock_crm.json",
+        "fileSelector": ": /data/mock_crm.json",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        928,
-        0
+        768,
+        128
       ],
-      "id": "d32e3f9c-a87e-4c0f-be44-ba22dfe72835",
-      "name": "Read/Write Files from Disk"
+      "id": "36ecfb8c-e329-410e-8291-4caa0637562f",
+      "name": "Read/Write Files from Disk",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get existing records from the Read node — may be empty/failed if file didn't exist\nlet existingRecords = [];\n\nconst readNodeOutput = $('Read/Write Files from Disk').first();\n\nif (readNodeOutput && readNodeOutput.binary && readNodeOutput.binary.data) {\n  try {\n    const fileText = Buffer.from(readNodeOutput.binary.data.data, 'base64').toString('utf8');\n    existingRecords = fileText.trim() ? JSON.parse(fileText) : [];\n  } catch (e) {\n    existingRecords = [];\n  }\n}\n\n// Build the new CRM record from Edit Fields1's output\nconst source = $('Edit Fields1').item.json;\n\nconst newRecord = {\n  crm_record_id: source.crm_record_id,\n  created_at: source.created_at,\n  status: source.status,\n  company_name: source.company_name,\n  contact_name: source.contact_name,\n  contact_email: source.contact_email,\n  contact_phone: source.contact_phone,\n  product_interest: source.product_interest,\n  quantity: source.quantity,\n  project_location: source.project_location,\n  deadline: source.deadline,\n  attachments: source.attachments,\n  extracted_intent: source.extracted_intent,\n};\n\nexistingRecords.push(newRecord);\n\nreturn [{\n  json: newRecord,\n  binary: {\n    data: {\n      data: Buffer.from(JSON.stringify(existingRecords, null, 2)).toString('base64'),\n      mimeType: 'application/json',\n      fileName: 'mock_crm.json',\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -16
+      ],
+      "id": "181a09c4-1f8b-450d-b2b3-8e7c80d39246",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/data/mock_crm.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        128
+      ],
+      "id": "117d2121-3a18-48e2-a71e-325887c2fe19",
+      "name": "Read/Write Files from Disk1"
     }
   ],
   "pinData": {},
@@ -228,17 +258,39 @@
           }
         ]
       ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6c7f42c8-1f3f-47b2-9675-63dc01c42237",
+  "versionId": "d559321f-b25c-4575-8891-b35c7fbb3ea0",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b5912e16ada0848a02f2980a116600deca1c194dc27dbb2cdf026580208cfcdb"
+    "instanceId": "b900bbde375d2a61bb75da7da04178fecc3385e297d739c54aa4ad3807b4ddef"
   },
-  "id": "pw1c78uqksuf6CQk",
+  "id": "ZEgikqamk6tgQb5g",
   "tags": []
 }
