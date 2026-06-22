@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n:1.120.4
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - GENERIC_TIMEZONE=Asia/Riyadh
+    volumes:
+      - n8n_data:/home/node/.n8n          # n8n's own database — workflows, credentials, executions
+      - ./data:/data                       # our mock CRM JSON storage — mapped to a local folder
+
+volumes:
+  n8n_data:
+    name: n8n_data

@@ -1,0 +1,244 @@
+{
+  "name": "rfq-crm-automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/rfq-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3e3a593a-1ad6-48ec-ad9b-6bf201c5c28e",
+      "name": "Webhook",
+      "webhookId": "733d531f-bc8b-4936-b8e3-1d547e0016d9"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "={{ $json.body.message_body }}"
+            },
+            {
+              "role": "system",
+              "content": "=You are an RFQ intake assistant for AL ROUF LED Lighting Technology Co.\n\nYou will receive the free-text message body of an inbound RFQ (Request for Quotation).\nYour job is to extract intent signals that are NOT already captured in structured fields\nlike quantity, deadline, or product name.\n\nRespond ONLY with valid JSON — no markdown fences, no explanation, no extra text.\nUse exactly this structure:\n\n{\n  \"urgency\": \"one of: low / standard / high / urgent\",\n  \"key_requirements\": [\"short phrase\", \"short phrase\"],\n  \"summary\": \"one sentence summarizing what the customer is asking for\"\n}\n\nRules:\n- urgency: infer from language cues (e.g. \"ASAP\", \"urgent\", explicit deadlines mentioned in tone) — default to \"standard\" if no signal exists\n- key_requirements: list specific asks mentioned in the text that go beyond the basic quote request (e.g. \"bulk pricing\", \"delivery timeline\", \"installation support\", \"warranty terms\")\n- summary: one clear sentence, no more\n- If the message body is empty or has no extractable signal, return urgency \"standard\", empty key_requirements array, and a generic summary"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e7f0c95c-8596-4838-bb7f-a7e14db2eed6",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "eQPIIV9Gn9QuqBGI",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5cfc86e-405f-43c8-8277-ddd9edeb4635",
+              "name": "company_name",
+              "value": "={{ $('Webhook').item.json.body.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3a245f55-a692-4f80-9e41-478faf6ad1c8",
+              "name": "contact_name",
+              "value": "={{ $('Webhook').item.json.body.contact_name }}",
+              "type": "string"
+            },
+            {
+              "id": "edacbb8b-0fe7-4973-8b86-9dcb11797a4f",
+              "name": "contact_email",
+              "value": "={{ $('Webhook').item.json.body.contact_email }}",
+              "type": "string"
+            },
+            {
+              "id": "16509dae-59fe-4849-89d1-8595dcac9251",
+              "name": "contact_phone",
+              "value": "={{ $('Webhook').item.json.body.contact_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "5510c5cf-0e2a-4979-b3d6-a26ef20bef43",
+              "name": "product_interest",
+              "value": "={{ $('Webhook').item.json.body.product_interest }}",
+              "type": "string"
+            },
+            {
+              "id": "7c9aba2a-6865-43e6-9d2d-ebc7e1c0a969",
+              "name": "quantity",
+              "value": "={{ $('Webhook').item.json.body.quantity }}",
+              "type": "string"
+            },
+            {
+              "id": "13d4e627-d976-4256-9bcb-793d75ceda7b",
+              "name": "project_location",
+              "value": "={{ $('Webhook').item.json.body.project_location }}",
+              "type": "string"
+            },
+            {
+              "id": "1b18335a-ff17-4869-b143-c1d370bc9dc1",
+              "name": "deadline",
+              "value": "={{ $('Webhook').item.json.body.deadline }}",
+              "type": "string"
+            },
+            {
+              "id": "b590c8c2-002d-4017-b183-0d2b961bc566",
+              "name": "attachments",
+              "value": "={{ $('Webhook').item.json.body.attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "e04e33b3-3627-4acc-a0c1-46672abdae67",
+              "name": "extracted_intent",
+              "value": "={{ JSON.parse($json.output[0].content[0].text) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "29cee08f-6094-4e0e-9118-9cb8e9ca3b55",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25f1df52-4240-4ced-ad78-ec11c058f337",
+              "name": "crm_record_id",
+              "value": "={{ $now.toMillis() }}-{{ $('Webhook').item.json.body.contact_email.split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "14e3b4ca-8ff0-4166-8d5f-d7d2710655ed",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "f477989d-187f-4ad9-ba60-184a270aa159",
+              "name": "status",
+              "value": "new",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        0
+      ],
+      "id": "a0584dfb-a5db-48ca-a1b9-94377a6694dc",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "./data/mock_crm.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        928,
+        0
+      ],
+      "id": "d32e3f9c-a87e-4c0f-be44-ba22dfe72835",
+      "name": "Read/Write Files from Disk"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6c7f42c8-1f3f-47b2-9675-63dc01c42237",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b5912e16ada0848a02f2980a116600deca1c194dc27dbb2cdf026580208cfcdb"
+  },
+  "id": "pw1c78uqksuf6CQk",
+  "tags": []
+}
