@@ -211,6 +211,89 @@
       ],
       "id": "117d2121-3a18-48e2-a71e-325887c2fe19",
       "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a professional sales correspondence assistant for AL ROUF LED Lighting Technology Co.\n\nGiven structured RFQ details, write a brief, professional client reply acknowledging receipt of their request and confirming next steps. Do NOT provide actual pricing — a formal quotation will follow separately.\n\nRespond ONLY with valid JSON, no markdown fences:\n\n{\n  \"reply_en\": \"English version of the reply, 3-4 sentences\",\n  \"reply_ar\": \"Arabic version of the same reply, 3-4 sentences, professional Modern Standard Arabic\"\n}"
+            },
+            {
+              "content": "=Customer: {{ $('Edit Fields1').item.json.contact_name }} from {{ $('Edit Fields1').item.json.company_name }}\nProduct interest: {{ $('Edit Fields1').item.json.product_interest }}\nQuantity: {{ $('Edit Fields1').item.json.quantity }}\nLocation: {{ $('Edit Fields1').item.json.project_location }}\nKey requirements: {{ $('Edit Fields1').item.json.extracted_intent.key_requirements.join(', ') }}\n\nWrite the acknowledgment reply now."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        -16
+      ],
+      "id": "5ef7eaca-0644-4d62-bd04-e1a232aaaac3",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "DFlLKny2DbnWxWzL",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/data/alerts.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        128
+      ],
+      "id": "19886b56-0510-4496-bc3f-34ba7f55cbdf",
+      "name": "Read/Write Files from Disk3",
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "jsCode": "let alerts = [];\nconst readNodeOutput = $('Read Alerts File').first();\n\nif (readNodeOutput && readNodeOutput.binary && readNodeOutput.binary.data) {\n  try {\n    const fileText = Buffer.from(readNodeOutput.binary.data.data, 'base64').toString('utf8');\n    alerts = fileText.trim() ? JSON.parse(fileText) : [];\n  } catch (e) {\n    alerts = [];\n  }\n}\n\nconst source = $('Edit Fields').item.json;\n\nlet parsedReply = { reply_en: null, reply_ar: null };\ntry {\n  const replyText = $('Message a model1').item.json.output[0].content[0].text;\n  parsedReply = JSON.parse(replyText);\n} catch (e) {\n  parsedReply = { reply_en: null, reply_ar: null };\n}\n\nconst newAlert = {\n  alert_id: `alert-${Date.now()}`,\n  triggered_at: new Date().toISOString(),\n  type: 'new_rfq_received',\n  message: `New RFQ from ${source.company_name} (${source.contact_name}) — ${source.quantity} units of ${source.product_interest}`,\n  crm_record_id: $('Edit Fields1').item.json.crm_record_id,\n  draft_reply_en: parsedReply.reply_en,\n  draft_reply_ar: parsedReply.reply_ar,\n};\n\nalerts.push(newAlert);\n\nreturn [{\n  json: newAlert,\n  binary: {\n    data: {\n      data: Buffer.from(JSON.stringify(alerts, null, 2)).toString('base64'),\n      mimeType: 'application/json',\n      fileName: 'alerts.json',\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        -16
+      ],
+      "id": "908e5479-19bc-46ac-8a3a-95f9bff975df",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/alerts.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        128
+      ],
+      "id": "a8e3fa5f-ffb9-46a8-adae-6144625e7efc",
+      "name": "Read Alerts File",
+      "alwaysOutputData": true,
+      "retryOnFail": true
     }
   ],
   "pinData": {},
@@ -280,13 +363,62 @@
           }
         ]
       ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Read Alerts File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk3": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Alerts File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d559321f-b25c-4575-8891-b35c7fbb3ea0",
+  "versionId": "122b6528-570c-4dd4-8e0b-92c84bcbd608",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b900bbde375d2a61bb75da7da04178fecc3385e297d739c54aa4ad3807b4ddef"

@@ -1,0 +1,28 @@
+[
+  {
+    "alert_id": "alert-1782218807236",
+    "triggered_at": "2026-06-23T12:46:47.236Z",
+    "type": "new_rfq_received",
+    "message": "New RFQ from undefined (undefined) — undefined units of undefined",
+    "crm_record_id": "1782218804954-ahmed",
+    "draft_reply_en": "Thank you for your RFQ. We acknowledge receipt of your request and are reviewing the details provided, including your product interest and requirements. To proceed accurately, please share any missing information such as product model/specifications, quantity, and installation or location details. Once we have everything confirmed, we will prepare and share a formal quotation separately.",
+    "draft_reply_ar": "شكرًا لتواصلكم وتقديم طلب RFQ. نؤكد استلام طلبكم ونحن بصدد مراجعة التفاصيل المقدمة، بما في ذلك اهتمامكم بالمنتج ومتطلباتكم. ولضمان إعداد عرض مناسب ودقيق، نرجو تزويدنا بأي معلومات ناقصة مثل موديل/مواصفات المنتج، الكمية، وتفاصيل الموقع أو التطبيق. بعد استلام كل البيانات وتأكيدها، سنقوم بإعداد عرض سعري رسمي بشكل منفصل."
+  },
+  {
+    "alert_id": "alert-1782219852422",
+    "triggered_at": "2026-06-23T13:04:12.422Z",
+    "type": "new_rfq_received",
+    "message": "New RFQ from Gulf Construction LLC (Ahmed Al-Mutairi) — 200 units of LED High Bay Lights, 150W",
+    "draft_reply_en": "Thank you for your request regarding AL ROUF LED Lighting Technology Co. We acknowledge receipt of your inquiry and will review the details provided. To proceed, our team will contact you for any missing specifications (such as product interest, quantity, and project requirements) to ensure an accurate formal quotation. We look forward to supporting you with the right LED lighting solution.",
+    "draft_reply_ar": "شكرًا لتواصلكم مع شركة AL ROUF لتقنية إضاءة LED. نود تأكيد استلام طلبكم، وسنقوم بمراجعة تفاصيل استفساركم. للانتقال إلى الخطوة التالية، سيتواصل فريقنا معكم لاستكمال أي معلومات غير مكتملة (مثل نوع المنتج والكمية ومتطلبات المشروع) لضمان إعداد عرض سعر رسمي ودقيق. نتطلع إلى مساعدتكم باختيار حل إضاءة LED مناسب."
+  },
+  {
+    "alert_id": "alert-1782220771366",
+    "triggered_at": "2026-06-23T13:19:31.366Z",
+    "type": "new_rfq_received",
+    "message": "New RFQ from Gulf Construction LLC (Ahmed Al-Mutairi) — 200 units of LED High Bay Lights, 150W",
+    "crm_record_id": "1782220767270-ahmed",
+    "draft_reply_en": "Thank you for contacting AL ROUF LED Lighting Technology Co. We acknowledge receipt of your RFQ and appreciate your interest in our LED lighting solutions. Our team will review the details and confirm the required specifications, lead time, and availability. A formal quotation will be shared with you shortly as the next step.",
+    "draft_reply_ar": "شكرًا لتواصلكم مع شركة AL ROUF لتقنية إضاءة LED. نؤكد استلام طلب الاستفسار الخاصّ بكم، ونتقدّر اهتمامكم بحلول الإضاءة لدينا. سيقوم فريقنا بمراجعة التفاصيل وتأكيد المواصفات المطلوبة، ومدة التوريد، والتوفر. وسيتم تزويدكم بالعرض الرسمي كخطوة لاحقة قريبًا."
+  }
+]
