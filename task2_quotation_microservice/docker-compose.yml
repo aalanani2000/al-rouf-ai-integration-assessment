@@ -1,0 +1,11 @@
+services:
+  quotation-service:
+    build: .
+    container_name: al-rouf-quotation-service
+    ports:
+      - "8000:8000"
+    environment:
+      - QUOTES_DB_PATH=/data/quotes.db
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

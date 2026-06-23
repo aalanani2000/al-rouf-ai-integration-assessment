@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# data/quotes.db is intentionally NOT excluded — kept as evidence
+# that the service persisted real quotes during testing.
