@@ -5,3 +5,6 @@ __pycache__/
 venv/
 *.pyc
 .DS_Store
+.ipynb_checkpoints/
+
+# n8n runtime data is NOT excluded — data/mock_crm.json is kept as evidence

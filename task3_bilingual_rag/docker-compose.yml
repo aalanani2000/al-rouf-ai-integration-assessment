@@ -1,0 +1,12 @@
+services:
+  rag-service:
+    build: .
+    container_name: al-rouf-rag-service
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RAG_INDEX_CACHE=/data/embeddings_cache.json
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

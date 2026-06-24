@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+# embeddings_cache.json is intentionally NOT excluded — kept as evidence
+# of a real indexing run, same pattern as Task 1 and Task 2 data files.
