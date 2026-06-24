@@ -6,5 +6,6 @@ venv/
 *.pyc
 .DS_Store
 .ipynb_checkpoints/
+03_solution_bundle.zip
 
 # n8n runtime data is NOT excluded — data/mock_crm.json is kept as evidence
